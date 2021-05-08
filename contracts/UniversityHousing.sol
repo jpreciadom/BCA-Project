@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-import "https://github.com/smartcontractkit/chainlink/blob/master/evm-contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract UniversityHousing {
 
@@ -10,7 +11,7 @@ contract UniversityHousing {
      * Id: Unique identificator for the rent
      * Owner: Address of the person who is the rent's owner
      * Renter: Address of the person who is "living" in the rent
-     * RentValue: rent value in dollars * 100 (rentValue = 100 is equal to 1 dollar)
+     * RentValue: rent value in dollars * 100000000 (rentValue = 100000000 is equal to 1 dollar)
      */
     struct Rent {
         uint id;
@@ -20,6 +21,7 @@ contract UniversityHousing {
     }
 
     AggregatorV3Interface internal priceFeed;
+    using SafeMath for uint;
 
     uint public rentCount = 0;
     mapping(uint => Rent) public rents;
@@ -27,7 +29,7 @@ contract UniversityHousing {
 
     // CONSTRUCTOR
     
-    constructor() public {
+    constructor() {
         priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
     }
 
@@ -80,8 +82,23 @@ contract UniversityHousing {
     }
 
     function payRent(uint _rentId) public payable onlyRenter(_rentId) validRendId(_rentId) {
-        require(rents[_rentId].rentValue == msg.value, "The value send must be equal to the rent value");
         Rent memory _rent = rents[_rentId];
-        payable(_rent.owner).transfer(msg.value);
+        uint etherPrice = getThePrice();
+        uint _rentValue = _rent.rentValue.mul(uint(1 ether)).div(etherPrice);
+        require(_rent.rentValue <= msg.value, "The value must be greater or queals to the rent value");
+        uint _change = msg.value.sub(_rentValue);
+        payable(_rent.owner).transfer(_rent.rentValue);
+        payable(msg.sender).transfer(_change);
+    }
+
+    function getThePrice() public view returns (uint) {
+        (
+            uint80 roundID, 
+            int price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+        return uint(price);
     }
 }

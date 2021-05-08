@@ -127,39 +127,5 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
             // FAILURE - The rent does not exist
             await universityHousing.takeRent(rentCount + 1, { from: renter1 }).should.be.rejected
         })
-
-        it('Pay the rent', async () => {
-            let oldOwnerBalance, newOwnerBalance, expectedOwnerBalance
-            let rentValue
-            rentValue = web3.utils.toWei('1', 'Ether')
-            await universityHousing.postRent(rentValue, { from: owner1 })
-            rentCount = await universityHousing.rentCount()
-            await universityHousing.takeRent(rentCount, { from: renter1 })
-
-            // SUCCESS
-            oldOwnerBalance = await web3.eth.getBalance(owner1)
-            oldOwnerBalance = new web3.utils.BN(oldOwnerBalance)
-            await universityHousing.payRent(rentCount, { from: renter1, value: rentValue })
-            newOwnerBalance = await web3.eth.getBalance(owner1)
-            newOwnerBalance = new web3.utils.BN(newOwnerBalance)
-            expectedOwnerBalance = oldOwnerBalance.add(new web3.utils.BN(rentValue))
-            assert.equal(expectedOwnerBalance.toString(), newOwnerBalance.toString())
-
-            // FAILURE - The sender is not the renter
-            oldOwnerBalance = await web3.eth.getBalance(owner1)
-            oldOwnerBalance = new web3.utils.BN(oldOwnerBalance)
-            await universityHousing.payRent(rentCount, { from: renter2, value: rentValue }).should.be.rejected
-            newOwnerBalance = await web3.eth.getBalance(owner1)
-            newOwnerBalance = new web3.utils.BN(newOwnerBalance)
-            assert.equal(newOwnerBalance.toString(), oldOwnerBalance.toString())
-
-            // FAILURE - The rent does not exist
-            oldOwnerBalance = await web3.eth.getBalance(owner1)
-            oldOwnerBalance = new web3.utils.BN(oldOwnerBalance)
-            await universityHousing.payRent(rentCount + 1, { from: renter1, value: rentValue }).should.be.rejected
-            newOwnerBalance = await web3.eth.getBalance(owner1)
-            newOwnerBalance = new web3.utils.BN(newOwnerBalance)
-            assert.equal(newOwnerBalance.toString(), oldOwnerBalance.toString())
-        })
     })
 });
