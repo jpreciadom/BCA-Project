@@ -16,17 +16,47 @@
       <div class="container-fluid">
         <div class="navbar-brand" href="#">Viviendas universitarias</div>
         <div class="navbar-nav">
-          <a class="navbar-text nav-link active" href="#">Inicio</a>
-          <a class="navbar-text nav-link active" href="#">Publicar un arriendo</a>
+          <a class="navbar-text nav-link active" href="#" onclick="$dc.showHome();">Inicio</a>
+          <a class="navbar-text nav-link active" href="#" onclick="$dc.showPostRent();">Publicar un arriendo</a>
         </div>
       </div>
     </nav>
   </header>
 
   <div id="main-content" class="container mt-5 pa-0">
+    <div class="row mt-5">
+      <div class="col-12 mb-5 mt-5">
+        <div class="container item pt-0 pb-2 px-0">
+          <div class="row justify-content-center mb-0">
+            <div class="col-11">
+              <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center card-image"
+                style="width: 100%;" src="{{ image }}" data-holder-rendered="true">
+            </div>
+          </div>
+          <div class="row field-divider">
+            <h3 class="item-field">Ciudad:</h3>
+            <p class="item-info">{{ city }}</p>
+          </div>
+          <div class="row field-divider">
+            <h3 class="item-field">Dirección:</h3>
+            <p class="item-info">{{ dir }}</p>
+          </div>
+          <div class="row field-divider">
+            <h3 class="item-field">Precio:</h3>
+            <p class="item-info">{{ rentValue }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="buttons" class="row">
+    </div>
   </div>
 
+  <script src="js/jquery-2.1.4.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="js/ajax-utils.js"></script>
+  <script src="js/script.js"></script>
 </body>
 
 </html>

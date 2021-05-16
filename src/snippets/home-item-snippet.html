@@ -1,17 +1,20 @@
-<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-1 mb-3">
-    <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="{{ image }}" data-holder-rendered="true">
+<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xxl-1 mb-4">
+    <a onclick="$dc.showRent('{{ id }}')" href="#">
+        <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;"
+            src="{{ image }}" data-holder-rendered="true">
+    </a>
     <div class="container item py-2 px-0">
-    <div class="row field-divider">
-        <h3 class="item-field">Ciudad:</h3>
-        <p class="item-info">{{ city }}</p>
-    </div>
-    <div class="row field-divider">
-        <h3 class="item-field">Dirección:</h3>
-        <p class="item-info">{{ dir }}</p>
-    </div>
-    <div class="row field-divider">
-        <h3 class="item-field">Precio:</h3>
-        <p class="item-info">{{ rentValue }}</p>
-    </div>
+        <div class="row field-divider">
+            <h3 class="item-field">Ciudad:</h3>
+            <p class="item-info">{{ city }}</p>
+        </div>
+        <div class="row field-divider">
+            <h3 class="item-field">Dirección:</h3>
+            <p class="item-info">{{ dir }}</p>
+        </div>
+        <div class="row field-divider">
+            <h3 class="item-field">Precio:</h3>
+            <p class="item-info">{{ rentValue }}</p>
+        </div>
     </div>
 </div>

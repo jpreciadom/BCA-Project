@@ -30,7 +30,7 @@ body {
 /* Home styles */
 
 .item {
-    background-color: #529353;
+    background-color: #C5C8C5;
 }
 
 .field-divider {
@@ -67,4 +67,11 @@ body {
 
 .post-rent-button {
     width: 100%;
+}
+
+/* Specific rent style */
+
+.card-image {
+    position: relative;
+    top: -50px;
 }
