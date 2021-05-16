@@ -28,7 +28,12 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
         let rentCount, rent
 
         it('Offer a rent', async () => {
-            await universityHousing.postRent(10, { from: owner1 })
+            await universityHousing.postRent(
+                'Bogotá, Colombia',
+                'Calle 123 # 12 - 34',
+                10, 
+                { from: owner1 }
+            )
             rentCount = await universityHousing.rentCount()
             rent = await universityHousing.getRent(rentCount)
 
@@ -36,11 +41,18 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
             assert.equal(rent.id, rentCount)
             assert.equal(rent.owner, owner1)
             assert.equal(rent.renter, 0x0)
+            assert.equal(rent.city, 'Bogotá, Colombia')
+            assert.equal(rent.rentAddress, 'Calle 123 # 12 - 34')
             assert.equal(rent.rentValue, 10)
         })
 
         it('Get a rent by id', async () => {
-            await universityHousing.postRent(10, { from: owner1 })
+            await universityHousing.postRent(
+                'Bogotá, Colombia',
+                'Calle 123 # 12 - 34',
+                10, 
+                { from: owner1 }
+            )
             rentCount = await universityHousing.rentCount()
             
             // The rent in on the map
@@ -54,7 +66,12 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
         })
 
         it('Take a rent', async () => {
-            await universityHousing.postRent(10, { from: owner1 })
+            await universityHousing.postRent(
+                'Bogotá, Colombia',
+                'Calle 123 # 12 - 34',
+                10, 
+                { from: owner1 }
+            )
             rentCount = await universityHousing.rentCount()
 
             // SUCCESS
@@ -76,31 +93,75 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
     describe('Owner options', async () => {
         let rentCount, rent
 
-        it('Change the rent value', async () => {
-            let firstRentValue = 1000
-            let secondRentValue = 2000
-            let thirdRentValue = 3000
+        it('Change the rent info', async () => {
+            let firstRentValue = 1000, firstCity = 'Bogotá', firstAddress = 'Calle 123'
+            let secondRentValue = 2000, secondCity = 'Pasto', secondAddress = 'Calle 456'
+            let thirdRentValue = 3000, thirdCity = 'Medellin', thirdAddress = 'Calle 789'
 
-            await universityHousing.postRent(firstRentValue, { from: owner1 })
+            await universityHousing.postRent(
+                firstCity,
+                firstAddress,
+                firstRentValue,
+                { from: owner1 }
+            )
             rentCount = await universityHousing.rentCount()
 
             // SUCCESS
-            await universityHousing.changeRentValue(rentCount, secondRentValue, { from: owner1 })
+            await universityHousing.updateRent(
+                rentCount,
+                secondCity,
+                secondAddress,
+                secondRentValue,
+                { from: owner1 }
+            )
             rent = await universityHousing.getRent(rentCount)
+            assert.notEqual(rent.city, firstCity)
+            assert.equal(rent.city, secondCity)
+            assert.notEqual(rent.rentAddress, firstAddress)
+            assert.equal(rent.rentAddress, secondAddress)
             assert.notEqual(rent.rentValue, firstRentValue)
             assert.equal(rent.rentValue, secondRentValue)
 
             // FAILURE - sender is not the owner
-            await universityHousing.changeRentValue(rentCount, thirdRentValue, { from: owner2 }).should.be.rejected
+            await universityHousing.updateRent(
+                rentCount,
+                thirdCity,
+                thirdAddress,
+                thirdRentValue,
+                { from: owner2 }
+            ).should.be.rejected
             rent = await universityHousing.getRent(rentCount)
+            assert.equal(rent.city, secondCity)
+            assert.notEqual(rent.city, thirdCity)
+            assert.equal(rent.rentAddress, secondAddress)
+            assert.notEqual(rent.rentAddress, thirdAddress)
             assert.equal(rent.rentValue, secondRentValue)
             assert.notEqual(rent.rentValue, thirdRentValue)
 
             // FAILURE - the new value is equal to the previous one
-            await universityHousing.changeRentValue(rentCount, secondRentValue, { from: owner1 }).should.be.rejected
+            await universityHousing.updateRent(
+                rentCount,
+                secondCity,
+                secondAddress,
+                secondRentValue,
+                { from: owner1 }
+            ).should.be.rejected
+            rent = await universityHousing.getRent(rentCount)
+            assert.notEqual(rent.city, firstCity)
+            assert.equal(rent.city, secondCity)
+            assert.notEqual(rent.rentAddress, firstAddress)
+            assert.equal(rent.rentAddress, secondAddress)
+            assert.notEqual(rent.rentValue, firstRentValue)
+            assert.equal(rent.rentValue, secondRentValue)
 
             // FAILURE - The rent does not exist
-            await universityHousing.changeRentValue(rentCount + 1, secondRentValue, { from: owner1 }).should.be.rejected
+            await universityHousing.updateRent(
+                rentCount + 1,
+                secondCity,
+                secondAddress,
+                secondRentValue,
+                { from: owner1 }
+            ).should.be.rejected
         })
     })
 
@@ -108,7 +169,12 @@ contract('UniversityHousing', ([owner1, owner2, renter1, renter2]) => {
         let rentCount, rent
 
         it('Leave rent', async () => {
-            await universityHousing.postRent(10, { from: owner1 })
+            await universityHousing.postRent(
+                'Bogotá, Colombia',
+                'Calle 123 # 12 - 34',
+                10, 
+                { from: owner1 }
+            )
             rentCount = await universityHousing.rentCount()
 
             // SUCCESS

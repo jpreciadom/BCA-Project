@@ -11,12 +11,16 @@ contract UniversityHousing {
      * Id: Unique identificator for the rent
      * Owner: Address of the person who is the rent's owner
      * Renter: Address of the person who is "living" in the rent
+     * City: city's name where the rent is lacated
+     * RentAddress: Rent's address in the city
      * RentValue: rent value in dollars * 100000000 (rentValue = 100000000 is equal to 1 dollar)
      */
     struct Rent {
         uint id;
         address owner;
         address renter;
+        string city;
+        string rentAddress;
         uint rentValue;
     }
 
@@ -58,30 +62,51 @@ contract UniversityHousing {
         return rents[_rentId];
     }
 
-    function postRent(uint _rentValue) public returns (uint) {
+    function postRent(
+        string memory _city,
+        string memory _rentAddress,
+        uint _rentValue
+    ) public returns (uint) {
         rentCount++;
-        rents[rentCount] = Rent(rentCount, msg.sender, address(0x0), _rentValue);
+        rents[rentCount] = Rent(
+            rentCount,
+            msg.sender,
+            address(0x0),
+            _city,
+            _rentAddress,
+            _rentValue
+        );
         return rentCount;
     }
 
-    function changeRentValue(uint _rentId, uint _rentValue) public onlyOwner(_rentId) validRendId(_rentId) {
+    function updateRent(
+        uint _rentId,
+        string memory _city,
+        string memory _rentAddress,
+        uint _rentValue
+    ) public onlyOwner(_rentId) validRendId(_rentId) returns (bool) {
         require(_rentValue != rents[_rentId].rentValue, "The new rent value must be different to the previous one");
         Rent storage rent = rents[_rentId];
+        rent.city = _city;
+        rent.rentAddress = _rentAddress;
         rent.rentValue = _rentValue;
+        return true;
     }
 
-    function takeRent(uint _rentId) public validRendId(_rentId) {
+    function takeRent(uint _rentId) public validRendId(_rentId) returns (bool) {
         require(rents[_rentId].renter == address(0x0), "The rent has already been taken");
         Rent storage rent = rents[_rentId];
         rent.renter = msg.sender;
+        return true;
     }
 
-    function leaveRent(uint _rentId) public onlyRenter(_rentId) validRendId(_rentId) {
+    function leaveRent(uint _rentId) public onlyRenter(_rentId) validRendId(_rentId) returns(bool) {
         Rent storage rent = rents[_rentId];
         rent.renter = address(0x0);
+        return true;
     }
 
-    function payRent(uint _rentId) public payable onlyRenter(_rentId) validRendId(_rentId) {
+    function payRent(uint _rentId) public payable onlyRenter(_rentId) validRendId(_rentId) returns(bool) {
         Rent memory _rent = rents[_rentId];
         uint etherPrice = getThePrice();
         uint _rentValue = _rent.rentValue.mul(uint(1 ether)).div(etherPrice);
@@ -89,6 +114,7 @@ contract UniversityHousing {
         uint _change = msg.value.sub(_rentValue);
         payable(_rent.owner).transfer(_rent.rentValue);
         payable(msg.sender).transfer(_change);
+        return true;
     }
 
     function getThePrice() public view returns (uint) {
