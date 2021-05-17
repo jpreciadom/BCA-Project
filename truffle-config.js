@@ -1,3 +1,6 @@
+const HDWalletProvider = require('truffle-hdwallet-provider-privkey');
+const { privateKey, endpoint } = require('./secrets.json');
+
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // for more about customizing your Truffle configuration!
@@ -9,6 +12,17 @@ module.exports = {
     },
     develop: {
       port: 8545
+    },
+    kovan: {
+      provider: function() {
+        return new HDWalletProvider(
+          [privateKey],
+          endpoint
+        )
+      },
+      gas: 5000000,
+      gasPrice: 25000000000,
+      network_id: 42
     }
   },
   compilers: {
