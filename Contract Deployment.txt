@@ -1,1 +1,1 @@
-El contrato fue desplegado en la red de prueba de kovan con el address 0x24ED7b094D9eDF83A5c3baee5cb143fe674db470
+El contrato fue desplegado en la red de prueba de kovan con el address 0x176f05ca2252024e7E682DA4d35A89A635c81530
