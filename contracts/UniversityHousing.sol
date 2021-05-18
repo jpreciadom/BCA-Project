@@ -108,16 +108,17 @@ contract UniversityHousing {
 
     function payRent(uint _rentId) public payable onlyRenter(_rentId) validRendId(_rentId) returns(bool) {
         Rent memory _rent = rents[_rentId];
-        uint etherPrice = getThePrice();
-        uint _rentValue = _rent.rentValue.mul(uint(1 ether)).div(etherPrice);
-        require(_rent.rentValue <= msg.value, "The value must be greater or queals to the rent value");
+
+        uint256 price = getThePrice();
+        uint256 _rentValue = uint256(1 ether).mul(_rent.rentValue).div(price);
+        require(_rentValue <= msg.value, "The value must be greater or queals to the rent value");
         uint _change = msg.value.sub(_rentValue);
-        payable(_rent.owner).transfer(_rent.rentValue);
+        payable(_rent.owner).transfer(_rentValue);
         payable(msg.sender).transfer(_change);
         return true;
     }
 
-    function getThePrice() public view returns (uint) {
+    function getThePrice() public view returns (uint256) {
         (
             uint80 roundID, 
             int price,
@@ -125,6 +126,6 @@ contract UniversityHousing {
             uint timeStamp,
             uint80 answeredInRound
         ) = priceFeed.latestRoundData();
-        return uint(price);
+        return uint256(price);
     }
 }
